@@ -8,13 +8,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class CartService {
 
-  cart = new BehaviorSubject<Cart>({item : [
-
-  ]})
+  cart = new BehaviorSubject<Cart>({item : []})
 
   constructor(private _snackBar : MatSnackBar) { }
-
-
   removeQuantity(item : CartItem) {
     let itemForRemoval : CartItem | undefined
 
@@ -36,9 +32,6 @@ export class CartService {
    }
 
 
-
-
-
   addToCart(itemx : CartItem) : void  {
     const item = [...this.cart.value.item];
 
@@ -51,7 +44,7 @@ export class CartService {
 
     this.cart.next({item});
     this._snackBar.open('1 item added to cart.', 'OK' ,  {duration:3000}) ;
-    console.log(this.cart.value)
+
   }
 
   getTotal(item : Array<CartItem>) : number {
@@ -65,6 +58,7 @@ export class CartService {
   this._snackBar.open('Cart is cleared' , ' OK ' , {duration:3000})
   }
 
+
   removeFromCart(item:CartItem , update = true)  : Array<CartItem>{
   const filteredItems =   this.cart.value.item.filter((x)=> x.id !== item.id);
 
@@ -72,8 +66,6 @@ export class CartService {
     this.cart.next({item : filteredItems});
   this._snackBar.open('1 item removed from cart','OK' , {duration:3000})
   }
-
-
   return filteredItems;
 
   }

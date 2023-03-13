@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { CartService } from './../../services/cart.service';
 import { Component, OnInit } from '@angular/core';
 import { Cart, CartItem } from '../models/cart.module';
+import { loadStripe } from '@stripe/stripe-js';
 
 @Component({
   selector: 'app-cart',
@@ -31,7 +33,7 @@ export class CartComponent  implements OnInit{
   dataSource : Array<CartItem> = [] ;
   displayedColumns : Array<string> = ["product" , "name" , "price" , "quantity" , "total","action"] ;
 
-  constructor(private cartService : CartService){}
+  constructor(private cartService : CartService , private httpClient : HttpClient){}
 
   ngOnInit(): void {
     this.cartService.cart.subscribe((a) => {
@@ -60,4 +62,17 @@ export class CartComponent  implements OnInit{
   onRemoveQuantity(item : CartItem) {
       this.cartService.removeQuantity(item) ;
   }
+
+  onCheckout() {
+      this.httpClient.post("http://localhost:4242/checkout" , {
+        items : this.cart.item
+      }).subscribe(async(res:any) => {
+        // bu töntem stripe apisinin kullanmaya hazır olmadan önce beklemek gerekir. bu nedenle await kullanarak loadStripın tamamlanmasını bekler
+        let stripe = await loadStripe     ('pk_test_51MgvEjIaIBSDV6EKodfi9Og3E0fCKbWd84FYoSL6w18bcD0zUJIsUC35BQn68gdhFD8PSDvX5dzviTk9cKNGfxzT00ZO3ctFNt')
+        stripe?.redirectToCheckout({
+          sessionId: res.id // oturum kimliğini göderir
+        })
+      })
+  }
+
 }
